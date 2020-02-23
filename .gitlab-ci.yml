@@ -1,0 +1,24 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+stages:
+  - build_image
+
+before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  - export REG_PREFIX="${CI_REGISTRY}/${CI_PROJECT_PATH}"
+
+build_image_traefik-dev:
+  stage: build_image
+  script:
+     - export IMAGE_NAME="${REG_PREFIX}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHA:0:8}"
+     - echo "${IMAGE_NAME}"
+     - docker build -t "${IMAGE_NAME}" .
+     - docker push "${IMAGE_NAME}"
+  only:
+    refs:
+      - dev
+    changes:
+      - docker/*
