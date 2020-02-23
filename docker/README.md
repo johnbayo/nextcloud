@@ -1,3 +1,3 @@
 # nextcloud
 
-This project will build a Nextcloud Image
+This project will build a custom Image for Nextcloud
