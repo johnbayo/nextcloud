@@ -1,0 +1,6 @@
+  'overwritehost' => '$NEXTCLOUD_URL',
+  'overwriteprotocol' => 'https',
+  'trusted_proxies' =>
+  array (
+    0 => 'localhost',
+  ),
