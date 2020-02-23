@@ -17,7 +17,7 @@ build_image_nextcloud-dev:
   script:
      - export IMAGE_NAME="${REG_PREFIX}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHA:0:8}"
      - echo "${IMAGE_NAME}"
-     - docker build -t "docker/${IMAGE_NAME}" .
+     - docker build -t "${IMAGE_NAME}" -f docker/Dockerfile .
      - docker push "${IMAGE_NAME}"
   only:
     refs:
