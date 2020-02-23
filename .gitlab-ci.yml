@@ -1,0 +1,62 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+stages:
+  - build_image
+  - tag_images_tua
+  - tag_production
+
+before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  - export REG_PREFIX="${CI_REGISTRY}/${CI_PROJECT_PATH}"
+
+build_image_nextcloud-dev:
+  stage: build_image
+  script:
+     - export IMAGE_NAME="${REG_PREFIX}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHA:0:8}"
+     - echo "${IMAGE_NAME}"
+     - docker build -t "${IMAGE_NAME}" .
+     - docker push "${IMAGE_NAME}"
+  only:
+    refs:
+      - dev
+    changes:
+      - docker/**
+
+tag_image_nextcloud-tua:
+  stage: tag_images_tua
+  script:
+     - . ./export_commit_for_tua.sh
+     - echo "${COMMIT_FOR_TUA}"
+     - export IMAGE_NAME_DEV="${REG_PREFIX}:dev-${COMMIT_FOR_TUA}"
+     - echo "${IMAGE_NAME_DEV}"
+     - docker pull "${IMAGE_NAME_DEV}"
+     - export IMAGE_NAME_TUA="${REG_PREFIX}:${CI_COMMIT_REF_NAME}"
+     - echo "${IMAGE_NAME_TUA}"
+     - docker tag "${IMAGE_NAME_DEV}" "${IMAGE_NAME_TUA}"
+     - docker push "${IMAGE_NAME_TUA}"
+  only:
+    - tags
+  except:
+    - master
+
+tag_image_nextcloud-prod:
+  stage: tag_production
+  script:
+     - export IMAGE_NAME_TUA="${REG_PREFIX}:tua-${CI_COMMIT_REF_NAME}"
+     - echo "${IMAGE_NAME_TUA}"
+     - docker pull "${IMAGE_NAME_TUA}"
+     - export IMAGE_NAME_PROD="${REG_PREFIX}:${CI_COMMIT_REF_NAME}"
+     - echo "${IMAGE_NAME_PROD}"
+     - export IMAGE_NAME_LATEST="${REG_PREFIX}:latest"
+     - echo "${IMAGE_NAME_LATEST}"
+     - docker tag "${IMAGE_NAME_TUA}" "${IMAGE_NAME_PROD}"
+     - docker tag "${IMAGE_NAME_TUA}" "${IMAGE_NAME_LATEST}"
+     - docker push "${IMAGE_NAME_PROD}"
+     - docker push "${IMAGE_NAME_LATEST}"
+  only:
+    - tags
+  except:
+    - tua

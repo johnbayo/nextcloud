@@ -1,0 +1,15 @@
+FROM nextcloud:18.0.0-apache
+
+ENV NEXTCLOUD_URL=$NEXTCLOUD_URL
+ENV NEXTCLOUD_CUSTOM_CONFIG_PATH=$NEXTCLOUD_CUSTOM_CONFIG_PATH
+ENV custom_config_php=/tmp/custom_config_php
+
+RUN apt-get update && \
+  apt-get install gettext-base -y
+
+COPY custom_config_php /tmp/custom_config_php
+COPY update_config.sh /tmp/update_config.sh
+COPY entrypoint.sh /entrypoint.sh
+
+RUN chmod 775 /entrypoint.sh
+RUN chmod +x /tmp/update_config.sh
