@@ -7,9 +7,9 @@ ENV custom_config_php=/tmp/custom_config_php
 RUN apt-get update && \
   apt-get install gettext-base -y
 
-COPY docker/custom_config_php /tmp/custom_config_php
-COPY docker/update_config.sh /tmp/update_config.sh
-COPY docker/entrypoint.sh /entrypoint.sh
+COPY custom_config_php /tmp/custom_config_php
+COPY update_config.sh /tmp/update_config.sh
+COPY entrypoint.sh /entrypoint.sh
 
 RUN chmod 775 /entrypoint.sh
 RUN chmod +x /tmp/update_config.sh

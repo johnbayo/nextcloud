@@ -1,0 +1,8 @@
+---
+# tasks file for initializing---
+# tasks file for nextcloud-ansible-vagrant
+- name: templating vagrant 
+- name: starting the vagrant box
+- name: initializing docker role
+- name: installing docker, docker-compose and its users
+- name: running the docker-compose up on the nextcloud folder
